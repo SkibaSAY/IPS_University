@@ -1,0 +1,404 @@
+﻿{
+  "Scenario": "Regression",
+  "DataSource": {
+    "Version": 3,
+    "EscapeCharacter": "\"",
+    "ReadMultiLines": false,
+    "KeepDiacritics": false,
+    "KeepPunctuations": false,
+    "AllowQuoting": false,
+    "Type": "TabularFile",
+    "FilePath": "C:\\Users\\User\\source\\repos\\TL2\\ML_Tenderland\\RecommendedTendersForUsers\\bin\\Debug\\net7.0\\13469.txt",
+    "Delimiter": "\t",
+    "DecimalMarker": ".",
+    "HasHeader": true,
+    "ColumnProperties": [
+      {
+        "ColumnName": "PurchaseTypeId",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "BeginPriceId",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SysModule",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Categories",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "RegionId",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OrganizationId",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "ProductsKtru",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "String",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "Estimation",
+        "ColumnPurpose": "Label",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      }
+    ]
+  },
+  "Environment": {
+    "Type": "LocalCPU",
+    "Version": 1
+  },
+  "RunHistory": {
+    "Version": 3,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastForestRegression",
+        "Score": 0.72879894418756885,
+        "RuntimeInSeconds": 0.905,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e4",
+          "e0": {
+            "OutputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ],
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ]
+          },
+          "e1": {
+            "InputColumnName": "ProductsKtru",
+            "OutputColumnName": "ProductsKtru"
+          },
+          "e2": {
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId",
+              "ProductsKtru"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e4": {
+            "NumberOfTrees": 4,
+            "NumberOfLeaves": 4,
+            "FeatureFraction": 1.0,
+            "LabelColumnName": "Estimation",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "LightGbmRegression",
+        "Score": -0.0073469350386643484,
+        "RuntimeInSeconds": 0.123,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e5",
+          "e0": {
+            "OutputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ],
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ]
+          },
+          "e1": {
+            "InputColumnName": "ProductsKtru",
+            "OutputColumnName": "ProductsKtru"
+          },
+          "e2": {
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId",
+              "ProductsKtru"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e5": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "LearningRate": 1.0,
+            "NumberOfTrees": 4,
+            "SubsampleFraction": 1.0,
+            "MaximumBinCountPerFeature": 254,
+            "FeatureFraction": 1.0,
+            "L1Regularization": 2E-10,
+            "L2Regularization": 1.0,
+            "LabelColumnName": "Estimation",
+            "FeatureColumnName": "Features"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeTweedieRegression",
+        "Score": -0.96039999999999992,
+        "RuntimeInSeconds": 0.379,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e9",
+          "e0": {
+            "OutputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ],
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ]
+          },
+          "e1": {
+            "InputColumnName": "ProductsKtru",
+            "OutputColumnName": "ProductsKtru"
+          },
+          "e2": {
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId",
+              "ProductsKtru"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e9": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 254,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "Estimation",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": true
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeRegression",
+        "Score": -1.0,
+        "RuntimeInSeconds": 0.077,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e8",
+          "e0": {
+            "OutputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ],
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ]
+          },
+          "e1": {
+            "InputColumnName": "ProductsKtru",
+            "OutputColumnName": "ProductsKtru"
+          },
+          "e2": {
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId",
+              "ProductsKtru"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e8": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 254,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "Estimation",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": true
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "FastTreeRegression",
+        "Score": -1.0,
+        "RuntimeInSeconds": 0.053,
+        "Parameter": {
+          "_SCHEMA_": "e0 * e1 * e2 * e3",
+          "e0": {
+            "OutputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ],
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId"
+            ]
+          },
+          "e1": {
+            "InputColumnName": "ProductsKtru",
+            "OutputColumnName": "ProductsKtru"
+          },
+          "e2": {
+            "InputColumnNames": [
+              "PurchaseTypeId",
+              "BeginPriceId",
+              "SysModule",
+              "Categories",
+              "RegionId",
+              "OrganizationId",
+              "ProductsKtru"
+            ],
+            "OutputColumnName": "Features"
+          },
+          "e3": {
+            "NumberOfLeaves": 4,
+            "MinimumExampleCountPerLeaf": 20,
+            "NumberOfTrees": 4,
+            "MaximumBinCountPerFeature": 254,
+            "FeatureFraction": 1.0,
+            "LearningRate": 0.099999999999999978,
+            "LabelColumnName": "Estimation",
+            "FeatureColumnName": "Features",
+            "DiskTranspose": false
+          }
+        }
+      }
+    ],
+    "Estimators": {
+      "e0": "ReplaceMissingValues",
+      "e1": "FeaturizeText",
+      "e2": "Concatenate",
+      "e3": "FastTreeRegression",
+      "e4": "FastForestRegression",
+      "e5": "LightGbmRegression",
+      "e6": "LbfgsPoissonRegressionRegression",
+      "e7": "SdcaRegression",
+      "e8": "FastTreeRegression",
+      "e9": "FastTreeTweedieRegression"
+    },
+    "Schema": "e0 * e1 * e2 * (e3 + e4 + e5 + e6 + e7 + e8 + e9)",
+    "MetricName": "RSquared",
+    "ModelFilePath": "C:\\Users\\User\\source\\repos\\TL2\\ML_Tenderland\\RecommendedTendersForUsers\\TestAlgorithms.mlnet"
+  },
+  "Type": "TrainingConfig",
+  "Version": 5,
+  "TrainingOption": {
+    "Version": 2,
+    "Subsampling": false,
+    "Tuner": "eci-cfo",
+    "Type": "RegressionTrainingOption",
+    "TrainingTime": 10,
+    "OptimizeMetric": "RSquared",
+    "LabelColumn": "Estimation",
+    "AvailableTrainers": [
+      "SDCA",
+      "LBFGS",
+      "LGBM",
+      "FASTTREE",
+      "FASTTREE-DISKTRANSPOSE",
+      "FASTFOREST"
+    ],
+    "ValidationOption": {
+      "Version": 0,
+      "Type": "TrainValidateSplitValidationOption",
+      "SplitRatio": 0.2
+    }
+  }
+}

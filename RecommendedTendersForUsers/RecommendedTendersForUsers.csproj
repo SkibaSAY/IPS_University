@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="4.5.3.3" />
+    <PackageReference Include="Microsoft.ML" Version="3.0.1" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="3.0.1" />
+    <PackageReference Include="Plotly.NET" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Tenderland.Database.PostgreSql" Version="2.3.3" />
+    <PackageReference Include="Tenderland.Database.PostgreSql.Extensions" Version="2.0.2" />
+    <PackageReference Include="Tenderland.Log.RabbitMQSink" Version="2.1.0" />
+    <PackageReference Include="Tenderland.TaskQueue.RabbitMQClient" Version="2.6.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MLRecommendationTendersForUsers\MLRecommendationTendersForUsers.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="TestAlgorithms">
+    <None Include="TestAlgorithms.mlnet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
