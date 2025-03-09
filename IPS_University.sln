@@ -13,12 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assistant", "Assistant\Assi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPSLib", "IPSLib\IPSLib.csproj", "{F7A76159-BDC4-4E3E-A517-1EF9380945B2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
-	ProjectSection(SolutionItems) = preProject
-		D:\5 курс\Задание к курсовой 5 курс.doc = D:\5 курс\Задание к курсовой 5 курс.doc
-		..\..\..\..\Users\SkibaSAY\Downloads\Курсовая IPS.docx = ..\..\..\..\Users\SkibaSAY\Downloads\Курсовая IPS.docx
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
