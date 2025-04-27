@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assistant", "Assistant\Assi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPSLib", "IPSLib\IPSLib.csproj", "{F7A76159-BDC4-4E3E-A517-1EF9380945B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IpsExampleConsole", "IpsExampleConsole\IpsExampleConsole.csproj", "{7DD97ABE-D96E-4F86-96D4-108B4A93ED57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F7A76159-BDC4-4E3E-A517-1EF9380945B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7A76159-BDC4-4E3E-A517-1EF9380945B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7A76159-BDC4-4E3E-A517-1EF9380945B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DD97ABE-D96E-4F86-96D4-108B4A93ED57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD97ABE-D96E-4F86-96D4-108B4A93ED57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DD97ABE-D96E-4F86-96D4-108B4A93ED57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DD97ABE-D96E-4F86-96D4-108B4A93ED57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
