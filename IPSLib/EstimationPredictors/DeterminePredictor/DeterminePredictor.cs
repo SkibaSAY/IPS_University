@@ -81,8 +81,8 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
 
                 //TODO: есть смысл отобрать самые частые шаги, чтобы не прогонять их все
                 //0.5 самый оптимальный и частый шаг обучения в наших моделях
-                //var learningSteps = new List<double>() { 10,5,2,1,0.5 };
-                var learningSteps = new List<double>() { 5 };
+                var learningSteps = new List<double>() { 10,5,2,1,0.5 };
+                //var learningSteps = new List<double>() { 5 };
                 foreach (var learnStep in learningSteps)
                 {
                     //TODO: есть ли смысл несколько раз пробегаться по данным?
@@ -118,6 +118,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             //повторно очищаем странные данные, тк догрузили новые
             //DropStrangeItemsFromHistory();
         }
+        
         /// <summary>
         /// Добавляет данные в модель, веса не изменяются
         /// </summary>

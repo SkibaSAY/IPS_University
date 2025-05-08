@@ -77,29 +77,10 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.Models
                 return;
             }
 
-            var percent = 0.2;
-            //эмпирически подобрано, меньше ставить не нужно,
-            //иначе не будут удалять данные по 1 и 2 элемента - мусорные данные
-            long max = Items.Max(item=>item.Count);
-
-            if(Items.Count > 3)
-            {
-                //есть смысл брать не первый макс, а второй
-                var temp = Items.Select(item => item.Count).ToList();
-                temp.Sort();
-                temp.Reverse();
-                max = temp.ElementAtOrDefault(1);
-            }
-            
-            //Отсеиваем мусор
-            //например: если у пользователя 100 тендеров, и в каждом разный заказчик - это нужно исключать          
-            if(max > 100)
-            {
-                //5%
-                percent = 0.1;
-            }
-
-            
+            var temp = Items.Select(item => item.Count).ToList();
+            temp.Sort();
+            long median = temp[temp.Count / 2];
+  
             foreach(var kvp in _items)
             {
                 var cur = kvp.Value;
@@ -112,18 +93,10 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.Models
                     return;
                 }
 
-                if(Count < 50)
-                {
-                    return;
-                }
-                else if((double)currCount / max < percent)
+                if(currCount <= median)
                 {
                     Remove(key);
                 }
-                //else if (currCount < 5)
-                //{
-                //    Remove(key);
-                //}
             }
         }
     }

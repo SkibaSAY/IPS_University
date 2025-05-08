@@ -1,5 +1,6 @@
 ﻿using IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors;
 using IPSLib.EstimationPredictors.DeterminePredictors;
+using IPSLib.Examples.TelecomX;
 using Microsoft.Data.Analysis;
 
 namespace IpsExampleConsole
@@ -9,16 +10,32 @@ namespace IpsExampleConsole
         static void Main(string[] args)
         {
             //ReadFrameCsv("example.txt");
-            TestLearning();
+            //TestLearning();
+            TestXTelecom();
         }
         
         static void TestLearning()
         {
-            var learningData = ReadFrameCsv("example.txt");
+            var learningData = ReadFrameCsv("example_tcp.txt");
             var predictors = GetPredictors(learningData);
             var predictor = new DeterminePredictor(predictors);
             predictor.Learn(learningData);
             var res = 1;
+
+            var badItemCount = 0;
+            foreach(var item in learningData.Rows)
+            {
+                var temp = predictor.Predict(new IPSLib.Model.Entity(item));
+                if(temp.PredictResult.TotalKf < 0.8)
+                {
+                    badItemCount++;
+                }
+            }
+        }
+
+        static void TestXTelecom()
+        {
+            var telecom = new TelecomX("C:\\Users\\Admin\\Desktop\\telecom10k");
         }
 
         static List<PredictorBase> GetPredictors(DataFrame learningData)
