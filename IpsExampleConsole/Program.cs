@@ -2,6 +2,7 @@
 using IPSLib.EstimationPredictors.DeterminePredictors;
 using IPSLib.Examples.TelecomX;
 using Microsoft.Data.Analysis;
+using Microsoft.ML;
 
 namespace IpsExampleConsole
 {
@@ -43,12 +44,32 @@ namespace IpsExampleConsole
             PrepareDirtyData(telecomDirty, path, usersPath);
 
             var expectedUserId = 5548;
-            //var users = new string[] { "5548", "3800", "8200" };
+
+            var anomalyUsersCount = 0;
             var users = telecomDirty.UserIds;
-            foreach (var userId in users.Take(100))
+            foreach (var userId in users)
             {
                 var telecom = new TelecomX(TelecomX.GetSavePath(userId, usersPath));
-                telecom.PlotCheckResult(telecom.LearningDataFrame, usersPath, userId);
+
+                var maxDate = Convert.ToDateTime(telecom.LearningDataFrame["RoundedDate"].Max()).Date;
+                maxDate = maxDate.AddHours(-6);
+                var allDf = telecom.LearningDataFrame;
+                var testingDf = allDf.Filter(allDf["RoundedDate"].ElementwiseGreaterThanOrEqual(maxDate));
+                var learningDf = allDf.Filter(allDf["RoundedDate"].ElementwiseLessThan(maxDate));
+                if (learningDf.Rows.Count < 20)
+                {
+                    continue;
+                }
+                telecom.LearningDataFrame = learningDf;
+
+                telecom.LearnPredictor();
+                var anomalyCount = telecom.TestLearning(testingDf);
+
+                if (anomalyCount > testingDf.Rows.Count / 3)
+                {
+                    anomalyUsersCount++;
+                    telecom.PlotCheckResult(allDf, usersPath, userId);
+                }
             }
         }
         static void PrepareDirtyData(TelecomXDirtyDataPreparer telecomDirty, string path, string saveTo)

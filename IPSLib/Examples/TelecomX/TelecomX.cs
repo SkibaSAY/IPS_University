@@ -34,10 +34,8 @@ namespace IPSLib.Examples.TelecomX
         public TelecomX(string dataUserPath)
         {
             this.Path = dataUserPath;
-            var allLearningData = Load();
-
             this.LearningDataFrame = Load();
-            LearnPredictor();
+            //LearnPredictor();
 
             //TestLearning(this.LearningDataFrame);
             //PlotCheckResult(this.LearningDataFrame);
@@ -46,7 +44,7 @@ namespace IPSLib.Examples.TelecomX
         {
             return DataFrame.LoadCsv(this.Path, separator: TelecomX.Separator);
         }
-        private void LearnPredictor()
+        public void LearnPredictor()
         {
             var predictors = GetPredictors(this.LearningDataFrame);
             this.Predictor = new DeterminePredictor(predictors);
@@ -85,11 +83,12 @@ namespace IPSLib.Examples.TelecomX
         /// Прогоняет данные по обученной модели и строит график, пок оторому видно, доверяем или нет
         /// </summary>
         /// <param name="items"></param>
-        public void PlotCheckResult(DataFrame df, string saveToDir, string fileName)
+        public void PlotCheckResult(DataFrame df, string saveToDir, string fileName, int takeLast = 7*24)
         {
             var points = new SortedDictionary<DateTime, double>();
 
-            foreach (var entity in df.Rows)
+            //Выводим только результаты за неделю
+            foreach (var entity in df.Rows.TakeLast(takeLast))
             {
                 var temp = this.Predictor.Predict(entity);
                 //переворачиваем график, чтобы пики были аномальной активностью
@@ -114,17 +113,18 @@ namespace IPSLib.Examples.TelecomX
             myPlot.SavePng($"{saveToDir}\\{fileName}.png", 1000, 800);
         }
 
-        private void TestLearning(DataFrame learningDf)
+        public int TestLearning(DataFrame testingDf, double trustBorder = 0.4)
         {
             var badItemCount = 0;
-            foreach (var entity in learningDf.Rows)
+            foreach (var entity in testingDf.Rows)
             {
                 var temp = this.Predictor.Predict(entity);
-                if (temp.PredictResult.TotalKf < 0.4)
+                if (temp.PredictResult.TotalKf < trustBorder)
                 {
                     badItemCount++;
                 }
             }
+            return badItemCount;
         }
     }
 }
