@@ -79,9 +79,10 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.Models
 
             var temp = Items.Select(item => item.Count).ToList();
             temp.Sort();
-            long median = temp[temp.Count / 2];
-  
-            foreach(var kvp in _items)
+            //long median = temp[temp.Count / 2];
+            long median = temp[temp.Count / 4];
+
+            foreach (var kvp in _items)
             {
                 var cur = kvp.Value;
                 var key = kvp.Key;

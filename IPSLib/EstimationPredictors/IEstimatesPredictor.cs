@@ -10,7 +10,7 @@ namespace IPSLib.EstimationPredictors
 {
     public interface IEntityPredictor
     {
-        public EntityPredict Predict(Entity entity);
+        public EntityPredict Predict(DataFrameRow entity);
         public string GenerateSavePath(long userId, string cacheDirPath);
 
         public void Learn(DataFrame learnindData);

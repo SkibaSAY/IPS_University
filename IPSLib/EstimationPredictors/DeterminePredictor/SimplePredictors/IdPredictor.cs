@@ -30,9 +30,5 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         {
             return GetTargetValue(row).ToString();
         }
-        protected override string CreateKey(Entity entity)
-        {
-            return GetTargetValue(entity).ToString();
-        }
     }
 }

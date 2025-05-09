@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.Analysis;
 
 namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
 {
@@ -19,7 +20,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
         {
             MaxDistancePercent = maxDistancePercent;
         }
-        public override PredictInfo Estimate(Entity entity)
+        public override PredictInfo Estimate(DataFrameRow entity)
         {
             var targetKey = CreateKey(entity);
             var targetVector = GetVector(targetKey);

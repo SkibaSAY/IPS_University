@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.22.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="ScottPlot" Version="5.0.55" />
   </ItemGroup>
 
   <ItemGroup>

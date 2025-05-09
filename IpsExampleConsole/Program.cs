@@ -25,7 +25,7 @@ namespace IpsExampleConsole
             var badItemCount = 0;
             foreach(var item in learningData.Rows)
             {
-                var temp = predictor.Predict(new IPSLib.Model.Entity(item));
+                var temp = predictor.Predict(item);
                 if(temp.PredictResult.TotalKf < 0.8)
                 {
                     badItemCount++;
@@ -35,7 +35,32 @@ namespace IpsExampleConsole
 
         static void TestXTelecom()
         {
-            var telecom = new TelecomX("C:\\Users\\Admin\\Desktop\\telecom10k");
+            var telecomDirty = new TelecomXDirtyDataPreparer();
+            var path = "C:\\Users\\Admin\\Desktop\\telecom10k";
+            var usersPath = $"{path}\\users";
+
+            //Данные мы преобразовали, пока хватит
+            PrepareDirtyData(telecomDirty, path, usersPath);
+
+            var expectedUserId = 5548;
+            //var users = new string[] { "5548", "3800", "8200" };
+            var users = telecomDirty.UserIds;
+            foreach (var userId in users.Take(100))
+            {
+                var telecom = new TelecomX(TelecomX.GetSavePath(userId, usersPath));
+                telecom.PlotCheckResult(telecom.LearningDataFrame, usersPath, userId);
+            }
+        }
+        static void PrepareDirtyData(TelecomXDirtyDataPreparer telecomDirty, string path, string saveTo)
+        {
+            var usersDir = new DirectoryInfo(saveTo);
+            if (usersDir.Exists)
+            {
+                Directory.Delete(saveTo, true);
+            }
+            usersDir.Create();
+
+            telecomDirty.GroupByUser(path, saveTo);
         }
 
         static List<PredictorBase> GetPredictors(DataFrame learningData)

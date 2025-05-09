@@ -26,7 +26,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
 
             History = new History();
         }
-        public override PredictInfo Estimate(Entity entity)
+        public override PredictInfo Estimate(DataFrameRow entity)
         {
             var maxPredictInfo = new PredictInfo() { Predictor = this };
             foreach (var predictor in Predictors)
@@ -52,14 +52,9 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             return maxPredictInfo;
         }
 
-        public override bool Filter(Entity fieldToEstimate)
+        public override bool Filter(DataFrameRow fieldToEstimate)
         {
             return Predictors.Any(p => p.Filter(fieldToEstimate));
-        }
-
-        public override bool Filter(DataFrameRow row)
-        {
-            return Predictors.Any(p => p.Filter(row));
         }
 
         public override void LoadRow(DataFrameRow row)

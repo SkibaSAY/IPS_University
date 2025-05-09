@@ -37,10 +37,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         }
 
         public string PropertyName;
-        public object GetTargetValue(Entity entity)
-        {
-            return entity[PropertyName];
-        }
         public object GetTargetValue(DataFrameRow row)
         {
             return row[PropertyName];
@@ -56,9 +52,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         /// <returns></returns>
         public abstract bool Filter(DataFrameRow row);
 
-        
-        public abstract bool Filter(Entity row);
-
         //TODO: может быть полезен
         //public abstract DataFrame Filter(DataFrame row);
 
@@ -67,7 +60,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         /// </summary>
         /// <param name="fieldToEstimate"></param>
         /// <returns></returns>
-        public abstract PredictInfo Estimate(Entity estimate);
+        public abstract PredictInfo Estimate(DataFrameRow estimate);
 
         public virtual void Load(DataFrame df)
         {

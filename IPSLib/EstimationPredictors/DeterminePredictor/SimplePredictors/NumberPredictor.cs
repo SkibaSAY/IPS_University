@@ -18,7 +18,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             this.roundingAccuracy = roundingAccuracy;
         }
 
-        public override PredictInfo Estimate(Entity estimate)
+        public override PredictInfo Estimate(DataFrameRow estimate)
         {
             var expectedKey = CreateKey(estimate);
             var selectedKf = EstimateKf.Default();
@@ -32,7 +32,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             return new PredictInfo { Kf = selectedKf, Predictor = this, TargetKey = selectedKey };
         }
 
-        public override bool Filter(Entity entity)
+        public override bool Filter(DataFrameRow entity)
         {
             var value = GetTargetValue(entity);
             return Filter(value);
@@ -42,13 +42,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
         {
             return (Single)value > 0;
         }
-
-        public override bool Filter(DataFrameRow row)
-        {
-            var value = GetTargetValue(row);
-            return Filter(value);
-        }
-
         public override void LoadRow(DataFrameRow row)
         {
             var key = CreateKey(row);
@@ -57,12 +50,8 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
 
         protected virtual string CreateKey(DataFrameRow row)
         {
-            return ((int)((Single)GetTargetValue(row) / roundingAccuracy)).ToString();
-        }
-
-        protected virtual string CreateKey(Entity entity)
-        {
-            return ((int)((Single)GetTargetValue(entity) / roundingAccuracy)).ToString();
+            //округляем до ближайшего по roundingAccuracy
+            return ((int)(((Single)GetTargetValue(row) + roundingAccuracy / 2) / roundingAccuracy)).ToString();
         }
     }
 }

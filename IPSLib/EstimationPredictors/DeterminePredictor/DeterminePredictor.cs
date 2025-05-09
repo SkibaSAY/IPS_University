@@ -136,7 +136,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             }
         }
 
-        public bool Filter(Entity entity)
+        public bool Filter(DataFrameRow row)
         {
             return true;
             //return Predictors.All(p => p.Filter(entity));
@@ -153,7 +153,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         #region WeightRecorrection
         private void WeightCorrection(DataFrameRow learnItem, double learnStep)
         {
-            var predictResult = PredictResults(new Entity(learnItem));
+            var predictResult = PredictResults(learnItem);
             var totalO = predictResult.TotalKf;
 
             var totalError = (int)EntityScoreEnum.Application / 100 - totalO;
@@ -201,23 +201,23 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             Predictors = JsonConvert.DeserializeObject<List<PredictorBase>>(json, JsonSettings);
         }
 
-        public PredictResult PredictResults(Entity entity)
+        public PredictResult PredictResults(DataFrameRow row)
         {
             var predictResult = new PredictResult();
             foreach (var predictor in Predictors)
             {
                 //Не каждый из предикторов способ проанализировать значение
-                if (predictor.Filter(entity))
+                if (predictor.Filter(row))
                 {
-                    var prInfo = predictor.Estimate(entity);
+                    var prInfo = predictor.Estimate(row);
                     predictResult.Add(prInfo);
                 }
             }
             return predictResult;
         }
-        public EntityPredict Predict(Entity entityEstimation)
+        public EntityPredict Predict(DataFrameRow entity)
         {
-            var predictResult = PredictResults(entityEstimation);
+            var predictResult = PredictResults(entity);
 
             var result = new EntityPredict();
             var newEstimation = 100 * predictResult.TotalKf;
@@ -245,7 +245,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             {
                 var point = new RSquaredPoint();
                 point.TrueResult = (int)EntityScoreEnum.Application;
-                point.PredictedResult = Predict(new Entity(row)).Estimation;
+                point.PredictedResult = Predict(row).Estimation;
 
                 points.Add(point);
             }

@@ -54,14 +54,5 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             var targetList = PrepareTargetArray(row);
             return success && targetList.All(k => !k.ToString().Equals("0/"));
         }
-
-        //TODO: работает не совсем верно - 0/ уже ничего не значит
-        public override bool Filter(Entity entity)
-        {
-            var success = base.Filter(entity);
-
-            var targetList = PrepareTargetArray(entity);
-            return success && targetList.All(k => !k.ToString().Equals("0/"));
-        }
     }
 }

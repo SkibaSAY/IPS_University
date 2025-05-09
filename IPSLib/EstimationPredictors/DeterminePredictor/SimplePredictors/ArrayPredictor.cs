@@ -31,14 +31,9 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             MaxItemsInGroup = maxItemsInGroup;
             MinItemsInGroup = minItemsInGroup;
         }
-
-        protected virtual List<TKey> PrepareTargetArray(Entity estimate)
+        protected virtual List<TKey> PrepareTargetArray(DataFrameRow entity)
         {
-            return (GetTargetValue(estimate) as IEnumerable<TKey>).ToList();
-        }
-        protected virtual List<TKey> PrepareTargetArray(DataFrameRow row)
-        {
-            return (GetTargetValue(row) as IEnumerable<TKey>).ToList();
+            return (GetTargetValue(entity) as IEnumerable<TKey>).ToList();
         }
 
         /// <summary>
@@ -46,9 +41,9 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
         /// </summary>
         /// <param name="estimate"></param>
         /// <returns></returns>
-        public override PredictInfo Estimate(Entity estimate)
+        public override PredictInfo Estimate(DataFrameRow entity)
         {
-            var targetList = PrepareTargetArray(estimate);
+            var targetList = PrepareTargetArray(entity);
 
             var keysGroups = PrepareKeyGroupsByEstimate(targetList);
             //По убыванию длины группы ключей
@@ -97,12 +92,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             return targetList != null
                 && targetList.Count > 0
                 && targetList.All(t => customFilter.Invoke(t));
-        }
-
-        public override bool Filter(Entity entity)
-        {
-            var targetList = PrepareTargetArray(entity);
-            return FilterList(targetList);
         }
 
         public override void LoadRow(DataFrameRow row)

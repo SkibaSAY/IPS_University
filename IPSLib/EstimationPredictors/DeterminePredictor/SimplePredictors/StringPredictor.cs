@@ -56,11 +56,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             var str = (GetTargetValue(row) as string);
             return PrepareTargetArray(str);
         }
-        protected override List<string> PrepareTargetArray(Entity entity)
-        {
-            var str = (GetTargetValue(entity) as string);
-            return PrepareTargetArray(str);
-        }
 
         private static Regex WordRegex = new Regex(@"\w+");
         protected List<string> PrepareTargetArray(string str)
