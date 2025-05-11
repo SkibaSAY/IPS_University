@@ -21,7 +21,6 @@ namespace IpsExampleConsole
             var predictors = GetPredictors(learningData);
             var predictor = new DeterminePredictor(predictors);
             predictor.Learn(learningData);
-            var res = 1;
 
             var badItemCount = 0;
             foreach(var item in learningData.Rows)
@@ -38,6 +37,7 @@ namespace IpsExampleConsole
         {
             var telecomDirty = new TelecomXDirtyDataPreparer();
             var path = "C:\\Users\\Admin\\Desktop\\telecom10k";
+            //var path = "C:\\Users\\Admin\\Desktop\\telecom100k";
             var usersPath = $"{path}\\users";
 
             //Данные мы преобразовали, пока хватит
@@ -53,9 +53,10 @@ namespace IpsExampleConsole
 
                 var maxDate = Convert.ToDateTime(telecom.LearningDataFrame["RoundedDate"].Max()).Date;
                 maxDate = maxDate.AddHours(-6);
+                //maxDate = maxDate.AddHours(-24);
                 var allDf = telecom.LearningDataFrame;
-                var testingDf = allDf.Filter(allDf["RoundedDate"].ElementwiseGreaterThanOrEqual(maxDate));
-                var learningDf = allDf.Filter(allDf["RoundedDate"].ElementwiseLessThan(maxDate));
+                var testingDf = allDf.Filter(allDf["RoundedDate"].ElementwiseGreaterThan(maxDate));
+                var learningDf = allDf.Filter(allDf["RoundedDate"].ElementwiseLessThanOrEqual(maxDate));
                 if (learningDf.Rows.Count < 20)
                 {
                     continue;
@@ -63,12 +64,12 @@ namespace IpsExampleConsole
                 telecom.LearningDataFrame = learningDf;
 
                 telecom.LearnPredictor();
-                var anomalyCount = telecom.TestLearning(testingDf);
+                var anomalyDates = telecom.TestLearning(testingDf);
 
-                if (anomalyCount > testingDf.Rows.Count / 3)
+                if (anomalyDates.Count > testingDf.Rows.Count / 3)
                 {
                     anomalyUsersCount++;
-                    telecom.PlotCheckResult(allDf, usersPath, userId);
+                    telecom.PlotCheckResult(allDf, usersPath, userId, anomalyDates: anomalyDates);
                 }
             }
         }

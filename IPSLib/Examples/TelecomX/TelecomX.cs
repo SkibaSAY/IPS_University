@@ -3,6 +3,7 @@ using IPSLib.EstimationPredictors.DeterminePredictors;
 using IPSLib.Model;
 using Microsoft.Data.Analysis;
 using Nest;
+using ScottPlot;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -83,10 +84,16 @@ namespace IPSLib.Examples.TelecomX
         /// Прогоняет данные по обученной модели и строит график, пок оторому видно, доверяем или нет
         /// </summary>
         /// <param name="items"></param>
-        public void PlotCheckResult(DataFrame df, string saveToDir, string fileName, int takeLast = 7*24)
+        public void PlotCheckResult(DataFrame df, string saveToDir, string userId, int takeLast = 7*24, List<DateTime> anomalyDates = null)
         {
-            var points = new SortedDictionary<DateTime, double>();
+            var userDirToSave = new DirectoryInfo($"{saveToDir}/{userId}");
+            if (userDirToSave.Exists)
+            {
+                userDirToSave.Delete(recursive: true);
+            }
+            userDirToSave.Create();
 
+            var points = new SortedDictionary<DateTime, double>();
             //Выводим только результаты за неделю
             foreach (var entity in df.Rows.TakeLast(takeLast))
             {
@@ -107,24 +114,66 @@ namespace IPSLib.Examples.TelecomX
 
             ScottPlot.Plot myPlot = new();
             myPlot.Add.Scatter(points.Keys.ToList(), points.Values.ToList());
+
+            //Отмечаем аномальные значения
+            if (anomalyDates != null)
+            {
+                myPlot.Add.ScatterPoints(anomalyDates, points.Where(p=>anomalyDates.Contains(p.Key)).Select(p=>p.Value).ToList(), Colors.Red);
+            }
             myPlot.Axes.DateTimeTicksBottom();
             myPlot.Axes.SetLimitsY(0, 100);
 
-            myPlot.SavePng($"{saveToDir}\\{fileName}.png", 1000, 800);
+            myPlot.SavePng($"{userDirToSave.FullName}\\_predict.png", 1000, 800);
+
+            //сохраним и исходные значения для проверки
+            PlotLearning(df, userDirToSave.FullName, anomalyDates: anomalyDates);
         }
 
-        public int TestLearning(DataFrame testingDf, double trustBorder = 0.4)
+        private void PlotLearning(DataFrame df, string saveToDir, int takeLast = 7 * 24, List<DateTime> anomalyDates = null)
+        {        
+            foreach(var column in SessionStatistic.LearningProperties)
+            {
+                var points = new SortedDictionary<DateTime, double>();
+
+                //Выводим только результаты за неделю
+                foreach (var entity in df.Rows.TakeLast(takeLast))
+                {
+                    points.Add(Convert.ToDateTime(entity["RoundedDate"]), Convert.ToSingle(entity[column.Name]));
+                }
+                ScottPlot.Plot myPlot = new();
+                myPlot.Add.Scatter(points.Keys.ToList(), points.Values.ToList());
+                
+                //Отмечаем аномальные значения
+                if (anomalyDates != null)
+                {
+                    myPlot.Add.ScatterPoints(anomalyDates, points.Where(p => anomalyDates.Contains(p.Key)).Select(p => p.Value).ToList(), Colors.Red);
+                }
+                myPlot.Axes.DateTimeTicksBottom();
+                //Иначе последняя запись не помещается и не подписывается
+                //myPlot.Axes.SetLimitsY(0, points.Values.Max() + 10);
+
+                myPlot.SavePng($"{saveToDir}\\{column.Name}.png", 1000, 800);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает список дат, где были аномалии
+        /// </summary>
+        /// <param name="testingDf"></param>
+        /// <param name="trustBorder"></param>
+        /// <returns></returns>
+        public List<DateTime> TestLearning(DataFrame testingDf, double trustBorder = 0.4)
         {
-            var badItemCount = 0;
+            var anomalyDateTimes = new List<DateTime>();
             foreach (var entity in testingDf.Rows)
             {
                 var temp = this.Predictor.Predict(entity);
                 if (temp.PredictResult.TotalKf < trustBorder)
                 {
-                    badItemCount++;
+                    anomalyDateTimes.Add(Convert.ToDateTime(entity["RoundedDate"]));
                 }
             }
-            return badItemCount;
+            return anomalyDateTimes;
         }
     }
 }
