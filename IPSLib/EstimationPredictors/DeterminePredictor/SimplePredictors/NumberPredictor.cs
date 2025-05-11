@@ -18,6 +18,25 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
             this.roundingAccuracy = roundingAccuracy;
         }
 
+        //Исходная версия, может аномалить для аномалий, близких к нормальным значениям
+        //public override PredictInfo Estimate(DataFrameRow estimate)
+        //{
+        //    var expectedKey = CreateKey(estimate);
+        //    var selectedKf = EstimateKf.Default();
+        //    var selectedKey = "";
+        //    if (History.TryGetByKey(expectedKey, out HistoryItem item))
+        //    {
+        //        selectedKf = item.EstimateKf;
+        //        selectedKey = expectedKey;
+        //    }
+
+        //    return new PredictInfo { Kf = selectedKf, Predictor = this, TargetKey = selectedKey };
+        //}
+
+        private string GetNearKey(string baseKey, int aditionalValue)
+        {
+            return (Convert.ToInt32(baseKey) + aditionalValue).ToString();
+        }
         public override PredictInfo Estimate(DataFrameRow estimate)
         {
             var expectedKey = CreateKey(estimate);
@@ -28,7 +47,14 @@ namespace IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors
                 selectedKf = item.EstimateKf;
                 selectedKey = expectedKey;
             }
-
+            else if(History.TryGetByKey(GetNearKey(expectedKey, 1), out item))
+            {
+                selectedKf = item.EstimateKf;
+            }
+            else if(History.TryGetByKey(GetNearKey(expectedKey, -1), out item))
+            {
+                selectedKf = item.EstimateKf;
+            }
             return new PredictInfo { Kf = selectedKf, Predictor = this, TargetKey = selectedKey };
         }
 
