@@ -65,16 +65,19 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         {
             //Подгонка весов происходит по данным, отличным от загруженной выборки
             //var learningDf = learnindData;
-            //var learningDf = (DataFrame)dataSplit.TrainSet;
-            //var testedDf = dataSplit.TestSet;
+            //TODO: найти способ нормально разделять на тестовый и обучающий
+            var count = learnindData.Rows.Count;
+            var lCount = (int)(count * 0.7);
+            var learningDf = learnindData.Head(lCount);
+            var testedDf = learnindData.Tail((int)(count - lCount));
 
-            LoadData(learnindData);
+            LoadData(learningDf);
             DropStrangeItemsFromHistory();
 
             //запоминаем текущие параметры
             var bestWeights = GetCurWeights();
 
-            double bestRsquared = Test(learnindData).RSquared;
+            double bestRsquared = Test(testedDf).RSquared;
             double bestLearnStep = 0;
 
             for(var curEpoch = 0; curEpoch < 10; curEpoch++)
@@ -90,7 +93,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
                     //TODO: есть ли смысл несколько раз пробегаться по данным?
                     for(var i = 0; i < 1; i++)
                     {
-                        foreach (var learnItem in learnindData.Rows)
+                        foreach (var learnItem in testedDf.Rows)
                         {
                             WeightCorrection(learnItem, learnStep);
                         }
@@ -98,7 +101,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
                         var tempWeigth = GetCurWeights();
                     }
 
-                    var testResult = Test(learnindData);
+                    var testResult = Test(testedDf);
                     if (bestRsquared < testResult.RSquared)
                     {
                         bestRsquared = testResult.RSquared;
@@ -116,7 +119,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             //заполняем лучшие веса
             Predictors.ForEach(p => { p.Weight = bestWeights[p]; });
             //дозагружаем тестовые данные 
-            //LoadData(testedData);
+            LoadData(testedDf);
             //повторно очищаем странные данные, тк догрузили новые
             //DropStrangeItemsFromHistory();
         }
