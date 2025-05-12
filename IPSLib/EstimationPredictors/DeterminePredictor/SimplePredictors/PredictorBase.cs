@@ -24,7 +24,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         /// Вес элемента
         /// </summary>
         public double Weight;
-
         public PredictorBase()
         {
 
@@ -71,8 +70,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         }
         
         public abstract void LoadRow(DataFrameRow row);
-
-
         public virtual void DropStrangeItemsFromHistory()
         {
             History.DropStrangeItems();
