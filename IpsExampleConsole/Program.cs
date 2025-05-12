@@ -41,7 +41,10 @@ namespace IpsExampleConsole
             var usersPath = $"{path}\\users";
 
             //Данные мы преобразовали, пока хватит
-            PrepareDirtyData(telecomDirty, path, usersPath);
+            //PrepareDirtyData(telecomDirty, path, usersPath);
+
+            //Заполним пользователей по уже готовым файлам
+            telecomDirty.UserIds = new DirectoryInfo(usersPath).GetFiles().Where(f => f.Name.EndsWith(".csv")).Select(f => f.Name.Split(".")[0]).ToHashSet<string>();
 
             var expectedUserId = 5548;
 
@@ -66,7 +69,7 @@ namespace IpsExampleConsole
                 telecom.LearnPredictor();
                 var anomalyDates = telecom.TestLearning(testingDf);
 
-                if (anomalyDates.Count > testingDf.Rows.Count / 3)
+                if (anomalyDates.Count > testingDf.Rows.Count / 3 || anomalyDates.Count > 0)
                 {
                     anomalyUsersCount++;
                     telecom.PlotCheckResult(allDf, usersPath, userId, anomalyDates: anomalyDates);

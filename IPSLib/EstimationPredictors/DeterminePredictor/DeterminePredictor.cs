@@ -64,8 +64,10 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         public void Learn(DataFrame learnindData)
         {
             //Подгонка весов происходит по данным, отличным от загруженной выборки
-            //var prepared = PreparedData<EntityEstimation>.Prepare(learnindData, 0.5);
-            //var testedData = prepared.TestData;
+            //var learningDf = learnindData;
+            //var learningDf = (DataFrame)dataSplit.TrainSet;
+            //var testedDf = dataSplit.TestSet;
+
             LoadData(learnindData);
             DropStrangeItemsFromHistory();
 

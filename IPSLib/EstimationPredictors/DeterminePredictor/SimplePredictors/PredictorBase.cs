@@ -72,6 +72,8 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         public abstract void LoadRow(DataFrameRow row);
         public virtual void DropStrangeItemsFromHistory()
         {
+            //TODO: временно отказываемся от удаления странных данных
+            return;
             History.DropStrangeItems();
         }
 
