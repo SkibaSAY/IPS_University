@@ -166,10 +166,6 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
 
             var deltaPart = sigmoida * (1 - sigmoida) * totalO * learnStep;
 
-            //неправильный подход - нужно учитывать все
-            //var usedPredictors = predictResult.UsedPredictors;
-
-
             //var usedPredictors = predictResult.Items.Keys;
             var usedPredictors = predictResult.UsedPredictors;
             
