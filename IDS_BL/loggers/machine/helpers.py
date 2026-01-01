@@ -1,20 +1,12 @@
 """ Вспомогательные функции """
 
-from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess, virtual_memory, cpu_percent
+import psutil
 import GPUtil
+import time
 from collections import namedtuple
 from ..constants import ConnectionInfo
 
-
-def get_cpu_usage(interval: int = 10) -> float:
-    """
-    Измеряет использование cpu
-    :param interval > 0: время, выделяемое на замер нагрузки
-        (?) Если передан None, то сравнивается с последним запуском
-    """
-    return cpu_percent(interval=interval)
-
-def get_top_processes(n=None):
+def get_top_processes(n=10):
     """
     Топ N процессов, нагружающих систему
     (?) Подробнее https://docs-python.ru/packages/modul-psutil-python/obekt-process/
@@ -30,13 +22,10 @@ def get_top_processes(n=None):
     # TODO: 'io_counters' позволяет получить информацию о файлах, в которых работал процесс - и числе байт написанных и прочитанных
     return_fields = ['pid', 'name', 'cpu_percent', 'memory_percent', 'memory_info']
     sorted_fields = ['cpu_percent', 'memory_percent']
-    processes = sorted(process_iter(return_fields), 
+    
+    for proc in sorted(psutil.process_iter(return_fields), 
                        key=lambda x: tuple(x.info[field] for field in sorted_fields),
-                       reverse=True)
-    if n and n > 0 and n < len(processes):
-        processes = processes[:n]
-        
-    for proc in processes:
+                       reverse=True)[:n]:
         try:
             new_process_info = {}
             for field in return_fields:
@@ -56,14 +45,13 @@ def get_top_processes(n=None):
 
             processes_infos.append(new_process_info)
 
-        except (NoSuchProcess, AccessDenied, ZombieProcess):
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
     
     return processes_infos
 
 def get_ram_usage():
-    return virtual_memory().percent
-
+    return psutil.virtual_memory().percent
 
 def get_gpu_usage():
     gpus = GPUtil.getGPUs()
@@ -71,3 +59,30 @@ def get_gpu_usage():
         return gpus[0].load * 100  
     return 0  
 
+def get_cpu_usage(interval: int = 10) -> float:
+    """
+    Измеряет использование cpu
+    :param interval > 0: время, выделяемое на замер нагрузки
+        (?) Если передан None, то сравнивается с последним запуском
+    """
+    return psutil.cpu_percent(interval=interval)
+
+def get_cpu_times(interval: int = 10) -> dict:
+    """
+    Замеряет процессорное время:
+    :return
+        user - время, затрачиваемое обычными процессами
+        system - время, затрачиваемое процессами, выполняющимися в режиме ядра
+        idle - время, потраченное на простой (когда процессор ничего не делает)
+    (?) Важно помнить, что 10 сек реального времени не означает, что максимум 10 сек:
+        10 сек на каждый логический процессор, в сумме может быть cpu_count * interval
+    https://docs-python.ru/packages/modul-psutil-python/ispolzovanie-resursov-os-tsp/#psutil.cpu_times
+    """
+    started = psutil.cpu_times()
+
+    time.sleep(interval)
+
+    finished = psutil.cpu_times()
+
+    fields = ['user', 'system', 'idle']
+    return {f:getattr(finished, f) - getattr(started,f) for f in fields}
