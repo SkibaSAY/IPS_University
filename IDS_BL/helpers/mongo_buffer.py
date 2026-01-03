@@ -3,8 +3,8 @@ https://www.w3schools.com/python/python_mongodb_insert.asp
 """
 
 from pymongo import MongoClient
-from datetime import datetime
-from threading import Timer
+from threading import Lock
+from .scheduler_ex import SchedulerEx
 
 
 __author__ = 'Сластухин А.Ю.'
@@ -12,40 +12,40 @@ __author__ = 'Сластухин А.Ю.'
 
 class MongoBuffer:
     """ Буффер для отложенной отправки в монгу """
-    _is_dispose: bool = False
-
     _buffer: dict = None
-    _last_send_time = None
+    _buffer_lock: Lock = None
     _send_interval = 1 * 60
-    _timer = None
+    _scheduler = None
 
     _client: MongoClient = None
     _db = None
 
     def __init__(self, connection: str = 'mongodb://localhost:27017/', db_name: str = 'test_ids'):
         self._buffer = {}
-        self._last_send_time = datetime.now()
+        self._buffer_lock = Lock()
 
         self._client = MongoClient(connection)
         self._db = self._client[db_name]
+        self._start_repeat()
+
+    def _start_repeat(self):
+        """ Настраиваем повторение """
+        self._scheduler = SchedulerEx()
+        self._scheduler.repeat(0, self._send_interval, 1, self._send_all)
+        self._scheduler.run_async()
 
     def __del__(self):
         """ Деструктор: выполняется при завершении работы """
-        self._is_dispose = True
-        self._send_all
-
-    def _reset_timer(self):
-        self._timer = Timer(interval=self._send_interval, function=self._send_all)
+        self._send_all()
 
     def _send_all(self):
-        for collection, files in self._buffer:
-            db_collection = self._db[collection]
-            db_collection.insert_many(files)
-
-        self._last_send_time = datetime.now()
-        if not self._is_dispose:
-            self._reset_timer()
+        with self._buffer_lock:
+            while self._buffer:
+                collection, files = self._buffer.popitem()
+                db_collection = self._db[collection]
+                db_collection.insert_many(files)
 
     def add(self, collection: str, file: dict) -> None:
-        current_collection_list: list = self._buffer.setdefault(collection, [])
-        current_collection_list.append(file)
+        with self._buffer_lock:
+            current_collection_list: list = self._buffer.setdefault(collection, [])
+            current_collection_list.append(file)
