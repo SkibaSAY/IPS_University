@@ -12,6 +12,7 @@ from datetime import datetime
 from helpers.mongo_buffer import MongoBuffer
 from helpers.scheduler_ex import SchedulerEx
 from .constants import WorkingStatus
+from .helpers import get_target_collection
 
 
 #TODO: Добавить сборщик трафика в режиме реального времени
@@ -76,9 +77,7 @@ class LoggerBase:
         if date_time is None:
             raise Exception('Логгер должен переопределить "_get_target_collection" или задавать "date_time"')
 
-        # округляем до 10 мин
-        minutes_floor = date_time.minute // 10 * 10
-        return f'time_{date_time.replace(minute=minutes_floor).strftime("%H_%M")}'
+        return get_target_collection(date_time)
  
 class ScheduleLogger(LoggerBase):
     """ Логгер, запускаемый по расписанию """

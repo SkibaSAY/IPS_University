@@ -47,4 +47,4 @@ initial_task = Thread(target=initial_start)
 initial_task.start()
 
 #старт через терминал:
-# uvicorn machine_total_api:app --reload --port 8000
+# uvicorn logger_total_api:app --reload --port 8000
