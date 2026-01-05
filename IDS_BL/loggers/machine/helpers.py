@@ -1,5 +1,6 @@
 """
 Вспомогательные функции
+(?) PSutils позволяет много информации про систему узнать
 https://www.geeksforgeeks.org/python/psutil-module-in-python/
 """
 
@@ -78,33 +79,55 @@ def get_disk_usage(path = '/') -> dict:
         'precent': disk_usage.percent
     }
 
-def get_net_io_stats() -> dict:
-    io_stats = psutil.disk_io_counters()
-    return
 
-
-def get_cpu_used_stats():
-    """
-    Статистика использования процессора с момента старта системы
-    ctx_switches — количество переключений контекста
-    interrupts — количество прерываний
-    soft_interrupts — количество программных прерываний
-    syscalls — количество системных вызовов. В Ubuntu всегда устанавливается значение 0.
-    """
-    stats = psutil.cpu_stats()
+def get_disk_io_stats() -> dict:
+    """ Статистика работы с диском с момент старта системы """
+    disk_io_stats = psutil.disk_io_counters()
     return {
-        'ctx_switches': stats.ctx_switches,
-        'interrupts': stats.interrupts,
-        'soft_interrupts': stats.soft_interrupts,
-        'syscalls': stats.syscalls
+        'read_count': disk_io_stats.read_count,
+        'read_bytes': disk_io_stats.read_bytes,
+        'read_time': disk_io_stats.read_time,
+        'write_count': disk_io_stats.write_count,
+        'write_bytes': disk_io_stats.write_bytes,
+        'write_time': disk_io_stats.write_time
     }
+
+
+def get_net_io_stats() -> dict:
+    """
+    Статистика сетевых обращений с момента старта системы
+        bytes_sent - количество отправленных байтов
+        bytes_recv - количество полученных байтов
+        packets_sent - количество отправленных пакетов
+        packets_recv - количество полученных пакетов
+        errin - общее количество ошибок при получении
+        errout - общее количество ошибок при отправке
+        dropin - общее количество входящих пакетов, которые были отброшены.
+        dropout — общее количество отброшенных исходящих пакетов.
+    """
+    net_io_stats = psutil.net_io_counters()
+    return {
+        'bytes_sent': net_io_stats.bytes_sent,
+        'bytes_recv': net_io_stats.bytes_recv,
+        'packets_sent': net_io_stats.packets_sent,
+        'packets_recv': net_io_stats.packets_recv,
+        'errin': net_io_stats.errin,
+        'errout': net_io_stats.errout,
+        'dropin': net_io_stats.dropin,
+        'dropout': net_io_stats.dropout
+    }
+
+
+def get_sensors_temperatures() -> dict:
+    """
+    Аппаратные температуры системы в градусах Цельсия
+    (?) Only LINUX
+    """
+    return psutil.sensors_temperatures()
 
 
 class MachineStatManager:
     """ Менеджер для работы со статистикой текущей машины """
-    _cpu_times = AbsoluteDictStat(get_func=psutil.cpu_times,
-                                  compute_fields=['user', 'system', 'idle'])
-    _cpu_used_stats = AbsoluteDictStat(get_func=get_cpu_used_stats)
 
     def __init__(self):
         # первый вызов должен быть пропущен - тк возвращает мусор, дальнейшие вызовы осмыслены
@@ -116,42 +139,12 @@ class MachineStatManager:
         self.get_cpu_times()
         self._cpu_used_stats.get()
 
-    def get_cpu_usage(self) -> float:
-        """
-        Измеряет использование cpu
-            (?) сравнивается с последним запуском
-        """
-        return psutil.cpu_percent(interval=None)
-
-    def get_cpu_times(self) -> dict:
-        """
-        Замеряет процессорное время(его изменение с момента первого запуска):
-            (?) Позволяет экономить время при статистических опросах в цикле
-            (!) Использующий контролирует интервал между запусками, от этого зависит релевантность результатов
-        :return
-            user - время, затрачиваемое обычными процессами
-            system - время, затрачиваемое процессами, выполняющимися в режиме ядра
-            idle - время, потраченное на простой (когда процессор ничего не делает)
-        (?) Важно помнить, что 10 сек реального времени не означает, что максимум 10 сек:
-            10 сек на каждый логический процессор, в сумме может быть cpu_count * interval
-        https://docs-python.ru/packages/modul-psutil-python/ispolzovanie-resursov-os-tsp/#psutil.cpu_times
-
-        (?) Рекомендуется использовать не реже, чем раз в 1 час - чтобы статитиска успела набежать
-        """
-        return self._cpu_times.get()
-
-    def cpu_used_stats(self) -> dict:
-        """
-        Статистика использования процессора с момента последнего обращения
-        (?) Рекомендуется использовать не реже, чем раз в 1 час - чтобы статитиска успела набежать
-        """
-        return self._cpu_used_stats.get()
 
     def cpu_stats(self) -> dict:
         stats = {
             'procent': self.get_cpu_usage(),
             'times': self.get_cpu_times(),
-            'used': 
+            'used': self.cpu_used_stats()
         }
 
     def io_stats(self) -> dict:
@@ -177,7 +170,7 @@ class MachineStatManager:
                 }
                 # Получаем дескрипторы для каждого процесса
                 # Это возвращает список объектов FileDescriptor
-                fds = 
+                #fds = 
                 # Если нужны и сокеты/пайпы, используйте proc.connections()
                 # total_fds += len(proc.connections())
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):

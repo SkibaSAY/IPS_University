@@ -6,28 +6,29 @@ B.Читает очередь и формирует блоки для добав
 """
 
 from time import sleep
-from .helpers import get_gpu_usage, get_ram_usage, MachineStatManager
+from loggers.machine.stat_managers import CPUStatManager
 from ..base import ScheduleLogger
 
 
 class MachineTotalLogger(ScheduleLogger):
     """ Логгер активности на текущей машине """
-    _stat_manager: MachineStatManager = None
+    _cpu_manager: CPUStatManager = None
+    _repeat_interval: int = None
 
     def __init__(self) -> None:
-        super().__init__(repeat_interval=60)
-        self._stat_manager = MachineStatManager()
-        # перед начало считывания нужно подождать 60 сек, чтобы данные выдавались актуальные данные
-        sleep(60)
+        self._repeat_interval = 60
+        super().__init__('TotalMachine', self._repeat_interval)
+
+    def _start_body(self):
+        # При инцииализации было зафиксировано состояние, растущих характеристик
+        self._cpu_manager = CPUStatManager()
+        # перед начало считывания нужно подождать первый интервал, чтобы накопились данные между первым и вторым
+        super()._start_body()
 
     def _get_data(self):
-        info = {
-            'cpu': self._stat_manager.cpu_stats(),
-            'ram': get_ram_usage(),
-            'gpu': get_gpu_usage(),
-            'processes_count': self._stat_manager.get_processes_count()
-        }
-
-        print(info)
-
+        info = self._cpu_manager.all_stats()
         return info
+
+    def _get_first_start_delay(self):
+        # перед начало считывания нужно подождать первый интервал, чтобы накопились данные между первым и вторым
+        return self._repeat_interval

@@ -1,16 +1,18 @@
-from loggers.machine.helpers import get_top_processes
+from loggers.machine.helpers import get_top_processes, get_disk_usage
 
 #print(get_top_processes(10))
 #print(get_cpu_usage())
 
-#from loggers.machine import MachineTotalLogger
-#logger = MachineTotalLogger()
-#logger.start()
+from loggers.machine import MachineTotalLogger
+logger = MachineTotalLogger()
+logger.start()
 
-#input('Press key to stop ...')
+input('Press key to stop ...')
 
-import psutil
-disk_usage = psutil.disk_usage('/')
-print(disk_usage)
+# from loggers.machine.stat_managers import CPUStatManager
+# from time import sleep
+# cpu = CPUStatManager()
 
-print(psutil.disk_io_counters())
+# print(cpu.all_stats())
+# sleep(10)
+# print(cpu.all_stats())

@@ -12,6 +12,7 @@ __author__ = 'Сластухин А.Ю.'
 
 class MongoBuffer:
     """ Буффер для отложенной отправки в монгу """
+    _name: str = None
     _buffer: dict = None
     _buffer_lock: Lock = None
     _send_interval = 1 * 60
@@ -20,7 +21,8 @@ class MongoBuffer:
     _client: MongoClient = None
     _db = None
 
-    def __init__(self, connection: str = 'mongodb://localhost:27017/', db_name: str = 'test_ids'):
+    def __init__(self, name: str ,connection: str = 'mongodb://localhost:27017/', db_name: str = 'test_ids'):
+        self._name = name
         self._buffer = {}
         self._buffer_lock = Lock()
 
@@ -30,15 +32,16 @@ class MongoBuffer:
 
     def _start_repeat(self):
         """ Настраиваем повторение """
-        self._scheduler = SchedulerEx()
-        self._scheduler.repeat(0, self._send_interval, 1, self._send_all)
+        self._scheduler = SchedulerEx(name=self._name)
+        self._scheduler.repeat(0, self._send_interval, 1, self.send_all)
         self._scheduler.run_async()
 
     def __del__(self):
         """ Деструктор: выполняется при завершении работы """
-        self._send_all()
+        self._scheduler.stop()
+        self.send_all()
 
-    def _send_all(self):
+    def send_all(self):
         with self._buffer_lock:
             while self._buffer:
                 collection, files = self._buffer.popitem()

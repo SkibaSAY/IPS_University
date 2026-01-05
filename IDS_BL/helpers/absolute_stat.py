@@ -41,4 +41,4 @@ class AbsoluteDictStat(AbsoluteStat):
 
     def _compute_result_value(self, new_value):
         fields = self._compute_fields or list(new_value.keys())
-        return {f:getattr(new_value, f) - getattr(self._old_value,f) for f in fields}
+        return {f:(new_value[f] - self._old_value[f]) for f in fields}
