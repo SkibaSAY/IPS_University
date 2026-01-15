@@ -14,6 +14,7 @@ from helpers.scheduler_ex import SchedulerEx
 from .constants import WorkingStatus
 from .helpers import get_target_collection
 
+logging.basicConfig(level=logging.INFO)
 
 #TODO: Добавить сборщик трафика в режиме реального времени
 class LoggerBase:
