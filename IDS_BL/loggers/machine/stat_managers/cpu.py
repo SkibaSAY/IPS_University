@@ -2,7 +2,7 @@ import psutil
 from helpers.absolute_stat import AbsoluteDictStat
 from .base import StatManagerBase
 from .process import processes_statistics
-from ..helpers import get_net_io_stats, get_disk_io_stats
+from ..helpers import get_net_io_stats, get_disk_io_stats, get_ram_usage
 
 
 class CPUStatManager(StatManagerBase):
@@ -23,6 +23,8 @@ class CPUStatManager(StatManagerBase):
         self._cpu_used_stats = AbsoluteDictStat(get_func=self.system_used_stats)
 
         #TODO: вынести, перечисленные ниже характеристики в отдельные менеджеры, по сущностям(Network, IO, Processes)
+        
+        #TODO: конкретно этот менеджер лучше использовать с фактическими значениями - перед показом уже поздно менять
         self._processes_stats = AbsoluteDictStat(get_func=processes_statistics)
         self._disk_io_stats = AbsoluteDictStat(get_func=get_disk_io_stats)
         self._net_io_stats = AbsoluteDictStat(get_func= get_net_io_stats)
@@ -127,8 +129,10 @@ class CPUStatManager(StatManagerBase):
             'freq': self.freq()['current'],
             'times': self.times(),
             'used': self.used_stats(),
+            'ram': get_ram_usage(),
 
             'processes_stats': self._processes_stats.get(),
+            #'processes_stats': processes_statistics(),
             'network': self._net_io_stats.get(),
             'disk': self._disk_io_stats.get()
         }

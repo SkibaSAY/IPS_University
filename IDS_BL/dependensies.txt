@@ -8,6 +8,7 @@ python 3.11.8:
     psutil
     pymongo
     GPUtil
+    pydantic
 
 MongoDb, развёрнутая на mongodb://localhost:27017/
 

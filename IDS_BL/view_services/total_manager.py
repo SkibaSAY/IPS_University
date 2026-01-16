@@ -14,10 +14,10 @@ class TotalViewManager:
 
     def __init__(self, ):
         self._mongo_client = MongoClient("mongodb://localhost:27017/")
-        self.db = self._mongo_client['total_ids']
+        self._db = self._mongo_client['test_ids']
 
-    def _get_data_from_col(self, collection: str, query: str) -> list[dict]:
-        return self._db[collection].find(query)
+    def _get_data_from_col(self, collection: str, query: dict) -> list[dict]:
+        return [file for file in self._db[collection].find(query, {'_id':0})]
 
     def get_analyzed_items_by_date(self, date_time: datetime) -> list[dict]:
         """ Получить набор данных для анализа за переданную дату """
@@ -25,6 +25,7 @@ class TotalViewManager:
         # TODO: если изменится время - поменять, дублирование логики
         minutes_floor = date_time.minute // 10 * 10
         prepared_date_time = date_time.replace(minute=minutes_floor, second=0, microsecond=0)
+        print(prepared_date_time)
         return self._get_data_from_col(collection, query={
             'date_time': {
                 '$gte': prepared_date_time,
@@ -43,7 +44,7 @@ class TotalViewManager:
         for i in range(6):
             # TODO: если изменится время - поменять, дублирование логики
             date_time = query_date_time.replace(hour=hour, minute=10*i)
-            collection = get_target_collection(datetime)
+            collection = get_target_collection(date_time)
             if collection in collections_names:
                 result.extend(self._get_data_from_col(collection, query={
                     'date_time': {

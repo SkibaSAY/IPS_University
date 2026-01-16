@@ -5,7 +5,7 @@
 B.Читает очередь и формирует блоки для добавления в базу данных
 """
 
-from time import sleep
+
 from loggers.machine.stat_managers import CPUStatManager
 from ..base import ScheduleLogger
 
