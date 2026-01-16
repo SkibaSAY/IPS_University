@@ -28,11 +28,12 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         {
 
         }
-        public PredictorBase(string targetPropName)
+        public PredictorBase(string targetPropName, string timelinePropName="")
         {
             History = new History();
             Options = new PredictorOptions();
             PropertyName = targetPropName;
+            TimeLinePropertyName = timelinePropName;
         }
 
         public string PropertyName;
@@ -40,6 +41,11 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         {
             return row[PropertyName];
         }
+
+        /// <summary>
+        /// Свойство, хранящее время, для учёта в разрезе временных рядов
+        /// </summary>
+        public string TimeLinePropertyName;
 
         public History History;
         public PredictorOptions Options;
@@ -80,6 +86,11 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         public override string ToString()
         {
             return PropertyName;
+        }
+
+        protected abstract string ComputeKey()
+        {
+
         }
     }
     public class PredictorOptions
