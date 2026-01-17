@@ -28,7 +28,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         {
 
         }
-        public PredictorBase(string targetPropName, string timelinePropName="")
+        public PredictorBase(string targetPropName, string timelinePropName="date_time")
         {
             History = new History();
             Options = new PredictorOptions();
@@ -46,6 +46,14 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
         /// Свойство, хранящее время, для учёта в разрезе временных рядов
         /// </summary>
         public string TimeLinePropertyName;
+        public string GetTimeLineValue(DataFrameRow row)
+        {
+            if (this.TimeLinePropertyName.Length == 0)
+            {
+                return "null";
+            }
+            return ((DateTime)row[TimeLinePropertyName]).Hour.ToString();
+        }
 
         public History History;
         public PredictorOptions Options;
@@ -88,9 +96,9 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             return PropertyName;
         }
 
-        protected abstract string ComputeKey()
+        protected virtual string ComputeKey(DataFrameRow row)
         {
-
+            return $"{this.GetTimeLineValue(row)}_{this.GetTargetValue(row)}";
         }
     }
     public class PredictorOptions

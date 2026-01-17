@@ -12,13 +12,22 @@ def prepare_view_type_query(view_type: ViewType) -> dict:
     result: dict = None
     match view_type:
         case ViewType.CPU:
-            result = {'percent': 1, 'ram': 1, 'times': 1, 'processes_stats': 1}
+            #TODO: временный костыль - ram появился недавно, потому временно его выключим его, чтобы не ломать форматы анализаторов
+            result = {'percent': 1,
+                      #'ram': 0,
+                      'times': 1,
+                      'processes_stats': 1}
         case ViewType.DISK:
             result = {'disk': 1}
         case ViewType.NETWORK:
             result = {'network': 1}
         case _:
             result = {}
+
+    # иначе можем занулить total 
+    if len(result) != 0:
+        # покажем дату - может быть полезна для анализатора
+        result['date_time'] = 1
     return result | {'_id':0}
 
 
@@ -35,23 +44,29 @@ def after_reading_prepare(view_type: ViewType):
                 new_result[key] = value
 
         return new_result
-
-    def extract_root_node(file: dict) -> dict:
-        """ Некоторые логгеры поставляют сгруппированными модулям """
+    
+    def prepare_view(file: dict, prefix: str) -> dict:
+        date_time = file.pop('date_time')
         file_childs = list(file.values())[0]
-        return file_childs
+        result = add_prefix(file_childs, prefix)
+        result['date_time'] = date_time
+        return result
 
     def total(file: dict) -> dict:
         return file
 
     def cpu(file: dict) -> dict:
-        return add_prefix(file, 'cpu')
+        date_time = file.pop('date_time')
+        result = add_prefix(file, 'cpu')
+        result['date_time'] = date_time
+        return result
+
 
     def disk(file: dict) -> dict:
-        return add_prefix(extract_root_node(file), 'disk')
+        return prepare_view(file, 'disk')
     
     def network(file: dict) -> dict:
-        return add_prefix(extract_root_node(file), 'network')
+        return prepare_view(file, 'network')
 
     result_func = None
     match view_type:

@@ -105,7 +105,7 @@ class ScheduleLogger(LoggerBase):
                                action=self.logging)
         self._scheduler.run_async()
 
-    def stop(self, is_error: bool = False):
+    def stop(self, is_error: bool = False) -> bool:
         self._status = WorkingStatus.STOPING if not is_error else WorkingStatus.HAS_ERROR
         self._scheduler.stop()
         super().stop()

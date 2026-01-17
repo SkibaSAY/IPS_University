@@ -57,6 +57,32 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             return $"{cacheDirPath}/{userId}.json";
         }
 
+        protected void TrainTestSplit(DataFrame df, out DataFrame learn, out DataFrame test, double fraction = 0.7)
+        {
+            //TODO: не самый оптимальный способ разбиения
+            var rnd = new Random();
+            learn = df.Head(1);
+
+            test = df.Tail(1);
+
+            var i = 0;
+            foreach(var row in df.Rows)
+            {
+                if (i != 0 && i != df.Rows.Count-1)
+                {
+                    if (rnd.NextDouble() < fraction)
+                    {
+                        learn.Append(row, inPlace: true);
+                    }
+                    else
+                    {
+                        test.Append(row, inPlace: true);
+                    }
+                }
+                i++;
+            }
+        }
+
         /// <summary>
         /// about learn https://habr.com/ru/articles/714988/
         /// </summary>
@@ -68,8 +94,10 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
             //TODO: найти способ нормально разделять на тестовый и обучающий
             var count = learnindData.Rows.Count;
             var lCount = (int)(count * 0.7);
-            var learningDf = learnindData.Head(lCount);
-            var testedDf = learnindData.Tail((int)(count - lCount));
+
+            TrainTestSplit(learnindData, out DataFrame learningDf, out DataFrame testedDf);
+            //var learningDf = learnindData.Head(lCount);
+            //var testedDf = learnindData.Tail((int)(count - lCount));
 
             LoadData(learningDf);
             DropStrangeItemsFromHistory();
@@ -93,7 +121,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
                     //TODO: есть ли смысл несколько раз пробегаться по данным?
                     for(var i = 0; i < 1; i++)
                     {
-                        foreach (var learnItem in testedDf.Rows)
+                        foreach (var learnItem in learningDf.Rows)
                         {
                             WeightCorrection(learnItem, learnStep);
                         }
@@ -187,6 +215,7 @@ namespace IPSLib.EstimationPredictors.DeterminePredictors
 
                 predictor.Weight += deltaW;
                 if(predictor.Weight > predictor.MaxWeight) predictor.Weight = predictor.MaxWeight;
+                else if(predictor.Weight < 0.01) predictor.Weight = 0.01;
             }
         }
 

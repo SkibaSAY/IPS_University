@@ -1,8 +1,10 @@
 ﻿using IPSLib.EstimationPredictors.DeterminePredictor.SimplePredictors;
 using IPSLib.EstimationPredictors.DeterminePredictors;
 using IPSLib.Examples.TelecomX;
+using IPSLib.Examples.MachineIDS;
 using Microsoft.Data.Analysis;
 using Microsoft.ML;
+using Nest;
 
 namespace IpsExampleConsole
 {
@@ -12,9 +14,30 @@ namespace IpsExampleConsole
         {
             //ReadFrameCsv("example.txt");
             //TestLearning();
-            TestXTelecom();
+            //TestXTelecom();
+            StartMachineAnalyzer();
         }
         
+        static void StartMachineAnalyzer()
+        {
+            var service = new ViewService(ViewServiceEnum.CPU);
+            //service.GetLearning(12);
+            //service.GetActual();
+            var analyzers = new List<MachineAnalyzer>(){ new CpuAnalyzer(), new DiskAnalyzer(), new NetworkAnalyzer() };
+
+            var tasks = new List<Task>();
+            foreach(var analyzer in analyzers)
+            {
+                //Можно при старте учить, можно сохранять и подгружать - не вопрос
+                analyzer.Learn();
+                analyzer.Save();
+                tasks.Add(analyzer.Start());
+            }
+            Task.WaitAny(tasks.ToArray());
+
+            Console.ReadLine();
+        }
+
         static void TestLearning()
         {
             var learningData = ReadFrameCsv("example_tcp.txt");

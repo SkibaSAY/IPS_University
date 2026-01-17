@@ -21,7 +21,7 @@ class SchedulerEx(scheduler):
     def run_async(self):
         """ Старт без блокировки активного процесса """
         # Запускаем планировщик в отдельном потоке
-        self.cancel_token = Event()
+        #self._cancel_token = Event()
         self._scheduler_task = Thread(target=self.run, kwargs={'blocking': True})
         #TODO: в случае ошибки потока - приложение не падает, подумать над пробросом исключения выше
         self._scheduler_task.start()
@@ -31,23 +31,23 @@ class SchedulerEx(scheduler):
         print(f'{alias}: {msg}')
 
     def stop(self):
-        if self.cancel_token:
-            if self.cancel_token.is_set():
+        if self._cancel_token:
+            if self._cancel_token.is_set():
                 print('Получено событие остановки - останавливаюсь')
             else:
                 print('Инициирую остановку')
-                self.cancel_token.set()
+                self._cancel_token.set()
 
             # ждём остановки
             self._scheduler_task.join()
 
         # подчищаем очередь выполнения
-        self.cancel()
+        self.cancel(self._cancel_token)
 
     def repeat(self, delay, interval, priority, action, *args, **kwargs):
         def repeat_action():
             try:
-                if self.cancel_token and self.cancel_token.is_set():
+                if self._cancel_token and self._cancel_token.is_set():
                     return
 
                 start_time = datetime.now()

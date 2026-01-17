@@ -22,11 +22,13 @@ async def start():
     else:
         status = total_machine_logger.get_info()['status']['name']
         return HTTPException(status_code=HTTPStatus.LOCKED,
-                             detail=f'Действие невозможно: Логгер находится в состоянии: {status}')
+                                detail=f'Действие невозможно: Логгер находится в состоянии: {status}')
 
 #TODO: Добавить возможность отложенного запуска
 @app.get("/stop", status_code=HTTPStatus.OK)
 async def stop():
+    return HTTPException(status_code=HTTPStatus.LOCKED,
+                        detail=f'Действие недопустимо в текущей версии')
     if lock.acquire(blocking=False):
         try:
             total_machine_logger.stop()
