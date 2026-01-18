@@ -5,6 +5,7 @@ using IPSLib.Examples.MachineIDS;
 using Microsoft.Data.Analysis;
 using Microsoft.ML;
 using Nest;
+using Serilog;
 
 namespace IpsExampleConsole
 {
@@ -15,15 +16,28 @@ namespace IpsExampleConsole
             //ReadFrameCsv("example.txt");
             //TestLearning();
             //TestXTelecom();
+            InitLogger();
             StartMachineAnalyzer();
         }
         
+        static void InitLogger()
+        {
+            Log.Logger = new LoggerConfiguration()
+                        .MinimumLevel.Information() // Set minimum logging level
+                        .WriteTo.Console()
+                        .CreateLogger();
+        }
+
         static void StartMachineAnalyzer()
         {
             var service = new ViewService(ViewServiceEnum.CPU);
             //service.GetLearning(12);
             //service.GetActual();
-            var analyzers = new List<MachineAnalyzer>(){ new CpuAnalyzer(), new DiskAnalyzer(), new NetworkAnalyzer() };
+            var analyzers = new List<MachineAnalyzer>(){
+                new CpuAnalyzer(),
+                //new DiskAnalyzer(),
+                //new NetworkAnalyzer() 
+            };
 
             var tasks = new List<Task>();
             foreach(var analyzer in analyzers)

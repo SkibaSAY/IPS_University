@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.ML" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="ScottPlot" Version="5.0.55" />
+    <PackageReference Include="Serilog" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
