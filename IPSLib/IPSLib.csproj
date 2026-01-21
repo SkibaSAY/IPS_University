@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="DataPreparers\" />
-    <Folder Include="Documentation\2026\" />
   </ItemGroup>
 
   <ItemGroup>
